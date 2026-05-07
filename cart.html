@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Shopping Cart</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background: #f4f4f6;
+        color: #333;
+      }
+      .container {
+        max-width: 960px;
+        margin: 40px auto;
+        padding: 20px;
+        background: #fff;
+        border-radius: 10px;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+      }
+      h1 {
+        margin-bottom: 20px;
+        text-align: center;
+      }
+      .cart-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+      }
+      .cart-table th,
+      .cart-table td {
+        padding: 14px 12px;
+        text-align: left;
+        border-bottom: 1px solid #e0e0e0;
+      }
+      .cart-table th {
+        background: #fafafa;
+        font-weight: 700;
+      }
+      .cart-table td img {
+        width: 80px;
+        border-radius: 8px;
+      }
+      .quantity-input {
+        width: 60px;
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        text-align: center;
+      }
+      .remove-btn,
+      .checkout-btn {
+        background: #007bff;
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        padding: 10px 16px;
+        transition: background 0.2s ease;
+      }
+      .remove-btn {
+        background: #dc3545;
+      }
+      .remove-btn:hover,
+      .checkout-btn:hover {
+        background: #0056b3;
+      }
+      .remove-btn:hover {
+        background: #c82333;
+      }
+      .summary {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 18px;
+        border: 1px solid #e0e0e0;
+        border-radius: 10px;
+        background: #fafafa;
+      }
+      .summary p {
+        margin: 0;
+        font-size: 1.1rem;
+        font-weight: 600;
+      }
+      .summary span {
+        font-size: 1.25rem;
+      }
+      @media (max-width: 720px) {
+        .cart-table th,
+        .cart-table td {
+          padding: 12px 8px;
+        }
+        .summary {
+          flex-direction: column;
+          align-items: stretch;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Shopping Cart</h1>
+      <table class="cart-table">
+        <thead>
+          <tr>
+            <th>Product</th>
+            <th>Price</th>
+            <th>Quantity</th>
+            <th>Total</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="cart-body">
+          <tr data-id="1">
+            <td>
+              <div style="display: flex; align-items: center; gap: 12px">
+                <img src="https://via.placeholder.com/80" alt="Product 1" />
+                <div>
+                  <strong>Wireless Headphones</strong><br />
+                  Black, Noise Cancelling
+                </div>
+              </div>
+            </td>
+            <td>$89.99</td>
+            <td>
+              <input type="number" class="quantity-input" min="1" value="1" />
+            </td>
+            <td class="item-total">$89.99</td>
+            <td><button class="remove-btn">Remove</button></td>
+          </tr>
+          <tr data-id="2">
+            <td>
+              <div style="display: flex; align-items: center; gap: 12px">
+                <img src="https://via.placeholder.com/80" alt="Product 2" />
+                <div>
+                  <strong>Smartwatch</strong><br />
+                  Fitness tracker band
+                </div>
+              </div>
+            </td>
+            <td>$59.99</td>
+            <td>
+              <input type="number" class="quantity-input" min="1" value="2" />
+            </td>
+            <td class="item-total">$119.98</td>
+            <td><button class="remove-btn">Remove</button></td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="summary">
+        <p>Grand Total: <span id="grand-total">$209.97</span></p>
+        <button class="checkout-btn">Proceed to Checkout</button>
+      </div>
+    </div>
+    <script>
+      function formatCurrency(value) {
+        return `$${value.toFixed(2)}`;
+      }
+
+      function calculateTotal(row) {
+        const priceText = row
+          .querySelector("td:nth-child(2)")
+          .textContent.trim()
+          .slice(1);
+        const quantity =
+          Number(row.querySelector(".quantity-input").value) || 1;
+        const total = Number(priceText) * quantity;
+        row.querySelector(".item-total").textContent = formatCurrency(total);
+        return total;
+      }
+
+      function updateGrandTotal() {
+        const rows = document.querySelectorAll("#cart-body tr");
+        let sum = 0;
+        rows.forEach((row) => {
+          sum += calculateTotal(row);
+        });
+        document.getElementById("grand-total").textContent =
+          formatCurrency(sum);
+      }
+
+      function removeRow(event) {
+        const row = event.target.closest("tr");
+        if (row) {
+          row.remove();
+          updateGrandTotal();
+        }
+      }
+
+      document.querySelectorAll(".quantity-input").forEach((input) => {
+        input.addEventListener("change", () => {
+          const row = input.closest("tr");
+          const quantity = Number(input.value);
+          if (quantity < 1) input.value = 1;
+          calculateTotal(row);
+          updateGrandTotal();
+        });
+      });
+
+      document.querySelectorAll(".remove-btn").forEach((button) => {
+        button.addEventListener("click", removeRow);
+      });
+
+      document.querySelector(".checkout-btn").addEventListener("click", () => {
+        alert("Proceeding to checkout...");
+      });
+
+      updateGrandTotal();
+    </script>
+  </body>
+</html>
